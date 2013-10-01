@@ -62,9 +62,6 @@ var ATO_CFGT = 0x7F;
 var TOU_THRESH = 0x06;
 var REL_THRESH = 0x0A;
 
-
-var eeprom = [];
-
 function readData(address){
 	wire.writeByte(0x00, null);
 	wire.writeByte(0x01, null);
