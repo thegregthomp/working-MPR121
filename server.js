@@ -1,5 +1,14 @@
 var i2c = require('i2c'),
 	async = require('async');
+
+var EventEmitter = require('events').EventEmitter;
+var Gpio = require('onoff').Gpio,        // Constructor function for Gpio objects.
+    button = new Gpio(18, 'in', 'both', {
+    	debounceTimeout : 250,
+        persistentWatch : true
+    });
+
+
 var address = 0x5a;
 var wire = new i2c(address, {device: '/dev/i2c-1', debug: false}); // point to your i2c address, debug provides REPL interface
 
@@ -57,16 +66,20 @@ var REL_THRESH = 0x0A;
 var eeprom = [];
 
 function readData(address){
-
-	MSB = wire.readBytes(0x00, 32, function(err, res) {
-	    if (err) return console.log(err+',read failed');
-		console.log(res); //Returns <bytes>
-		console.log(JSON.stringify(res));
-		
+	wire.writeByte(0x00, null);
+	wire.writeByte(0x01, null);
+	wire.readBytes(function(err, res1) {
+		if (err) return console.log(err+',read failed');
+		var msb = res1;
+	    wire.readBytes(function(err, res2) {
+	    	if (err) return console.log(err+',read failed');
+	    	var lsb = res2;
+		      if (!err) {
+		        var touch = (msb << 8) | lsb;
+		        console.log("touched " + touch);
+		      }
+	    });
 	});
-	//LSB = wire.readBytes(address, 0x01, null)
-	//touchData = (MSB << 8) | LSB
-	
 }
 
 function setup(address){
@@ -140,25 +153,8 @@ function setup(address){
 }
 
 setup();
-var poop = setInterval(function(){
+var loop = setInterval(function(){
 	touchData = readData(address);
 	//console.log(touchData);
-},500);
+},2000);
 
-
-	/*async.waterfall([
-    function(callback){
-
-        callback(null, 'one', 'two');
-    },
-    function(arg1, arg2, callback){
-        callback(null, 'three');
-    },
-    function(arg1, callback){
-        // arg1 now equals 'three'
-        callback(null, 'done');
-    }
-	], function (err, result) {
-		console.log(result);
-	   // result now equals 'done'    
-	});*/
