@@ -58,59 +58,13 @@ var eeprom = [];
 
 function readData(address){
 
-	/*async.waterfall([
-    function(callback){
-
-        callback(null, 'one', 'two');
-    },
-    function(arg1, arg2, callback){
-        callback(null, 'three');
-    },
-    function(arg1, callback){
-        // arg1 now equals 'three'
-        callback(null, 'done');
-    }
-	], function (err, result) {
-		console.log(result);
-	   // result now equals 'done'    
-	});*/
-
-
-	wire.readBytes(0x00, 32, function(err, res) {
+	MSB = wire.readBytes(0x00, 32, function(err, res) {
 	    if (err) return console.log(err+',read failed');
-			for (var i = 0; i < 16; i ++) {
-		      if (i > 2 && i < 6) 
-		          eeprom[i] = res.readUInt16BE(2*i);
-		      else
-		          eeprom[i] = res.readInt16BE(2*i);
-		      
-		      console.log(i+' '+eeprom[i]); 
-		    }
-	});
-
-
-
-
-
-
-
-
-
-
-	/*MSB = wire.readBytes(0x00, 32, function(err, res) {
-	    if (err) return console.log(err+',read failed');
-	    for (var i = 0; i < res.length ; i++) {
-	    	console.log(res.length);
-		  //res[i] = res.charCodeAt(i);
-		}
-
-		console.log(res);
+		console.log(res); //Returns <bytes>
+		console.log(JSON.stringify(res));
 		
-	});*/
-
-
+	});
 	//LSB = wire.readBytes(address, 0x01, null)
-
 	//touchData = (MSB << 8) | LSB
 	
 }
@@ -191,3 +145,20 @@ var poop = setInterval(function(){
 	//console.log(touchData);
 },500);
 
+
+	/*async.waterfall([
+    function(callback){
+
+        callback(null, 'one', 'two');
+    },
+    function(arg1, arg2, callback){
+        callback(null, 'three');
+    },
+    function(arg1, callback){
+        // arg1 now equals 'three'
+        callback(null, 'done');
+    }
+	], function (err, result) {
+		console.log(result);
+	   // result now equals 'done'    
+	});*/
